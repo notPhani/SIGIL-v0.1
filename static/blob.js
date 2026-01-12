@@ -410,7 +410,7 @@ if (cubeInitialized) {
 
 // Apply grain to canvas
 if (animationState === 'hero' || animationState === 'shrinking' || animationState === 'cube-interactive') {
-    applyFilmGrain(0.09);
+    applyFilmGrain(0.04);
 }
 
     
@@ -421,7 +421,7 @@ if (animationState === 'hero' || animationState === 'shrinking' || animationStat
     
     // Apply grain to canvas
     if (animationState === 'hero' || animationState === 'shrinking') {
-        applyFilmGrain(0.09);
+        applyFilmGrain(0.04);
     }
     
     requestAnimationFrame(render);
