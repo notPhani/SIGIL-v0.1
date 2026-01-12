@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGIL - Signatures Quantum Can't Break</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Three.js Canvas (Fixed behind everything) -->
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-logo">SIGIL</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#demo">Demo</a></li>
+            <li><a href="#developers">Developers</a></li>
+        </ul>
+        <button class="btn-nav">GET STARTED</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="scroll-container">
+
+        <!-- ============================================ -->
+        <!-- SLIDE 1: HERO                               -->
+        <!-- ============================================ -->
+        <section class="section hero-section" data-section="1">
+            <h1 class="hero-title">
+                SIGNATURES<br>
+                QUANTUM CAN'T<br>
+                BREAK
+            </h1>
+            <button class="btn-hero">GET STARTED</button>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SLIDE 2: INTRO TEXT                         -->
+        <!-- ============================================ -->
+        <section class="section intro-section" data-section="2">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading">Post-Quantum Authentication</h2>
+                    <p class="section-text">
+                        SIGIL is a lattice-based cryptographic layer that transforms your passwords 
+                        into quantum-resistant signatures. Built on proven mathematical hardness, 
+                        your authentication remains secure even when quantum computers arrive.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SLIDE 3: FEATURES - 3 COLUMN LAYOUT         -->
+        <!-- ============================================ -->
+        <section class="section features-section" data-section="3">
+            <div class="container">
+                <div class="card-layout">
+                    <!-- Left Column -->
+                    <div class="side-column">
+                        <div class="card card-purple">
+                            <div class="card-icon">⚡</div>
+                            <h3>GPU Accelerated</h3>
+                            <p>Lightning-fast signature generation using WebGPU acceleration</p>
+                        </div>
+                        <div class="card card-dark-blue">
+                            <div class="card-icon">🔐</div>
+                            <h3>Zero Knowledge</h3>
+                            <p>Password never leaves your device. Only mathematical proofs transmitted.</p>
+                        </div>
+                    </div>
+
+                    <!-- Center Impact Text -->
+                    <div class="center-title">
+                        <h2 class="impact-text">LAYER ON<br>ANYTHING</h2>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="side-column">
+                        <div class="card card-teal">
+                            <div class="card-icon">🌐</div>
+                            <h3>Universal</h3>
+                            <p>Works with any backend: REST, GraphQL, WebSockets</p>
+                        </div>
+                        <div class="card card-coral">
+                            <div class="card-icon">📊</div>
+                            <h3>Analytics</h3>
+                            <p>Track authentication patterns and security metrics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SLIDE 4: QUANTUM PROOF - 3 COLUMN          -->
+        <!-- ============================================ -->
+        <section class="section quantum-section" data-section="4">
+            <div class="container">
+                <div class="card-layout">
+                    <!-- Left Column -->
+                    <div class="side-column">
+                        <div class="card card-light-purple">
+                            <div class="card-icon">🔬</div>
+                            <h3>Lattice Mathematics</h3>
+                            <p>Built on proven NP-hard lattice problems</p>
+                        </div>
+                        <div class="card card-blue">
+                            <div class="card-icon">🛡️</div>
+                            <h3>NIST Approved</h3>
+                            <p>Based on post-quantum cryptography standards</p>
+                        </div>
+                    </div>
+
+                    <!-- Center Impact Text -->
+                    <div class="center-title">
+                        <h2 class="impact-text impact-green">QUANTUM<br>PROOF</h2>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="side-column">
+                        <div class="card card-dark-green">
+                            <div class="card-icon">∞</div>
+                            <h3>Future-Proof</h3>
+                            <p>Secure against both classical and quantum attacks</p>
+                        </div>
+                        <div class="card card-peach">
+                            <div class="card-icon">🔒</div>
+                            <h3>Ajtai Reduction</h3>
+                            <p>Hardness guaranteed by worst-case complexity theory</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SLIDE 5: TRANSITION "LET'S SEE SIGIL"      -->
+        <!-- ============================================ -->
+        <section class="section transition-section" data-section="5">
+            <div class="transition-content">
+                <h2 class="transition-title">Let's see SIGIL in action</h2>
+                <p class="transition-subtitle">
+                    Watch how a password becomes a quantum-resistant signature
+                </p>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SLIDE 6: HOW IT WORKS - 3 COLUMN          -->
+        <!-- ============================================ -->
+        <section class="section demo-section" data-section="6">
+            <div class="container">
+                <div class="card-layout">
+                    <!-- Left Column -->
+                    <div class="side-column">
+                        <div class="card card-purple">
+                            <div class="step-number">01</div>
+                            <h3>Enter Password</h3>
+                            <p>User enters password locally in browser</p>
+                        </div>
+                        <div class="card card-dark-blue">
+                            <div class="step-number">02</div>
+                            <h3>Derive Secret</h3>
+                            <p>Password → short lattice vector via KDF</p>
+                        </div>
+                    </div>
+
+                    <!-- Center Impact Text -->
+                    <div class="center-title">
+                        <h2 class="impact-text">HOW IT<br>WORKS</h2>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="side-column">
+                        <div class="card card-coral">
+                            <div class="step-number">03</div>
+                            <h3>Sign</h3>
+                            <p>Generate signature: t = A·s + e</p>
+                        </div>
+                        <div class="card card-teal">
+                            <div class="step-number">04</div>
+                            <h3>Verify</h3>
+                            <p>Server validates with public key</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SLIDE 7: DEVELOPERS - SIDE BY SIDE        -->
+        <!-- ============================================ -->
+        <section class="section dev-section" data-section="7">
+            <div class="container">
+                <h2 class="section-title">Developer Quick Start</h2>
+                
+                <div class="dev-grid">
+                    <!-- Code Example -->
+                    <div class="dev-card">
+                        <h3>Installation</h3>
+                        <div class="code-block">
+<pre><code>// Install
+npm install @sigil/auth
+
+// Register user
+import { register } from '@sigil/auth';
+
+const { publicKey } = await register({
+  username: 'alice',
+  password: 'secret123'
+});
+
+// Sign transaction
+const signature = await sign({
+  username: 'alice',
+  password: 'secret123',
+  message: 'transfer $100'
+});
+
+// Verify (server-side)
+const isValid = verify(
+  signature, 
+  publicKey
+);
+</code></pre>
+                        </div>
+                        <button class="btn-docs">Full Documentation →</button>
+                    </div>
+
+                    <!-- Use Cases -->
+                    <div class="dev-card">
+                        <h3>Use Cases</h3>
+                        <div class="use-case-list">
+                            <div class="use-case">
+                                <span class="use-case-icon">🏦</span>
+                                <div>
+                                    <h4>Banking & Finance</h4>
+                                    <p>Quantum-safe transaction signing</p>
+                                </div>
+                            </div>
+                            <div class="use-case">
+                                <span class="use-case-icon">🏥</span>
+                                <div>
+                                    <h4>Healthcare</h4>
+                                    <p>HIPAA-compliant authentication</p>
+                                </div>
+                            </div>
+                            <div class="use-case">
+                                <span class="use-case-icon">🎮</span>
+                                <div>
+                                    <h4>Gaming</h4>
+                                    <p>Anti-cheat player verification</p>
+                                </div>
+                            </div>
+                            <div class="use-case">
+                                <span class="use-case-icon">🔐</span>
+                                <div>
+                                    <h4>Enterprise SSO</h4>
+                                    <p>Multi-factor quantum auth</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================ -->
+        <!-- SLIDE 8: FINAL CTA                         -->
+        <!-- ============================================ -->
+        <section class="section cta-section" data-section="8">
+            <div class="container">
+                <h1 class="cta-title">
+                    JUMP INTO<br>
+                    THE QUANTUM<br>
+                    FUTURE
+                </h1>
+                
+                <div class="cta-demo">
+                    <input 
+                        type="password" 
+                        id="demo-password" 
+                        placeholder="Try it: Enter a password"
+                        class="demo-input"
+                    >
+                    <button id="demo-sign" class="btn-demo">Generate Signature</button>
+                    <div id="demo-result" class="demo-result"></div>
+                </div>
+
+                <div class="cta-buttons">
+                    <button class="btn-primary">Get Started Free</button>
+                    <button class="btn-secondary">Schedule Demo</button>
+                </div>
+
+                <div class="cta-stats">
+                    <div class="stat">
+                        <div class="stat-number">10ms</div>
+                        <div class="stat-label">Signature Time</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">256-bit</div>
+                        <div class="stat-label">Security Level</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">Quantum Resistance</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">SIGIL</div>
+                <p>Post-quantum authentication for the future</p>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <a href="#">Features</a>
+                    <a href="#">Pricing</a>
+                    <a href="#">Security</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Developers</h4>
+                    <a href="#">Documentation</a>
+                    <a href="#">API Reference</a>
+                    <a href="#">GitHub</a>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <a href="#">About</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js for Blob/Cube -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="js/blob.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>
