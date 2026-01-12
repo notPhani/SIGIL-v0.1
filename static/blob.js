@@ -311,7 +311,7 @@ function drawText(color, alpha = 1) {
     ctx.globalAlpha = 1;
 }
 
-function applyFilmGrain(intensity = 0.015) {
+function applyFilmGrain(intensity = 1) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const pixels = imageData.data;
     
@@ -410,7 +410,7 @@ if (cubeInitialized) {
 
 // Apply grain to canvas
 if (animationState === 'hero' || animationState === 'shrinking' || animationState === 'cube-interactive') {
-    applyFilmGrain(0.015);
+    applyFilmGrain(0.09);
 }
 
     
@@ -421,7 +421,7 @@ if (animationState === 'hero' || animationState === 'shrinking' || animationStat
     
     // Apply grain to canvas
     if (animationState === 'hero' || animationState === 'shrinking') {
-        applyFilmGrain(0.015);
+        applyFilmGrain(0.09);
     }
     
     requestAnimationFrame(render);
