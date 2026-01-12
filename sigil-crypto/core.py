@@ -32,7 +32,7 @@ class QaryLattice:
     @property
     def dimension(self):
         return self.params.m
-
+#----------------------------Lattice Generation----------------------------#
 def _generate_constraint_matrix(
     params: LatticeParams,
     seed: str,
@@ -110,7 +110,7 @@ def generate_qary_lattice(
     B = _construct_public_basis(A, params)
 
     return QaryLattice(params=params, basis=B)
-#----------------------------Lattice Generation----------------------------#
+#----------------------------Lattice Visualization----------------------------#
 def visualize_lattice_2d(
     lattice: QaryLattice,
     num_points: int = 500,
@@ -190,9 +190,4 @@ def visualize_lattice_3d(
     points_3d = points[:, [i, j, k]].cpu()
 
     return points_3d
-#----------------------------Lattice Visualization----------------------------#
-
-def generate_signature(
-    
-)
 #----------------------------Signature Generation----------------------------#
