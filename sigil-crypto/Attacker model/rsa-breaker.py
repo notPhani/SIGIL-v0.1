@@ -5,7 +5,7 @@ from math import gcd
 import random
 import time
 
-from Qtorch import Circuit, Gate, GateLibrary, QtorchBackend, PhiManifoldExtractor
+from Qtorch import Circuit, Gate, QtorchBackend
 
 
 class RSABreaker:
@@ -15,7 +15,7 @@ class RSABreaker:
     Key insight: Quantum wins for LARGE numbers, not small ones!
     """
     
-    def __init__(self, N: int = 437):
+    def __init__(self, N: int = 1024):
         self.N = N
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         
@@ -250,7 +250,7 @@ if __name__ == "__main__":
     print("🔬" * 35)
     
     # Use 437 for quick demo
-    breaker = RSABreaker(N=437)
+    breaker = RSABreaker(N=1024)
     breaker.demo_rsa_break()
     
     # Show where advantage actually appears
