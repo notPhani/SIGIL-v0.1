@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGIL - Quantum Signatures</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-logo">SIGIL</div>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#demo">Demo</a></li>
+            <li><a href="#developers">Developers</a></li>
+        </ul>
+        <button class="btn-nav">GET STARTED</button>
+    </nav>
+
+    <section class="hero" id="hero">
+        <canvas id="blob-canvas"></canvas>
+        <a href="#" class="btn-hero" id="cta-button">GET STARTED</a>
+    </section>
+
+    <div id="cube-container"></div>
+    <section class="feature-section" id="feature-section">
+        <div class="feature-card" id="feature-card"></div>
+    </section>
+
+    <section class="grid-section" id="grid-section">
+        <div class="grid-container">
+            <div class="grid-col">
+                <div class="grid-item purple expandable">
+                    <div class="card-content">
+                        <h3>IDENTITY>PASS</h3>
+                        <p class="card-desc">Even when your password breaks, lattice keeps you secure.</p>
+                    </div>
+                    <div class="card-expand">
+                        <div class="expand-icon"><span class="icon-line"></span><span class="icon-line"></span></div>
+                        <p class="expand-text">Post-quantum lattice cryptography ensures your identity remains protected.</p>
+                    </div>
+                </div>
+                <div class="grid-item dark-purple doomsday-card">
+                    <div class="card-content">
+                        <h3>DOOMSDAY CLOCK</h3>
+                        <div class="doomsday-timer">
+                            <span class="timer-value" id="doomsday-timer">16</span>
+                            <span class="timer-label">YEARS UNTIL Q-DAY</span>
+                        </div>
+                        <div class="timer-bar"><div class="timer-progress" id="timer-progress"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-item tall-middle">
+                <h2 class="everything-text">YOUR<br>IDENTITY<br>UNFORGABLE</h2>
+            </div>
+
+            <div class="grid-col">
+                <div class="grid-item dark-green expandable">
+                    <div class="card-content">
+                        <h3>LAYER ON ANYTHING</h3>
+                        <p class="card-desc">Secondary protection on existing classical encryption.</p>
+                    </div>
+                    <div class="card-expand">
+                        <div class="expand-icon"><span class="icon-line"></span><span class="icon-line"></span></div>
+                        <p class="expand-text">Seamlessly integrate with RSA or ECDSA. No migration required.</p>
+                    </div>
+                </div>
+                <div class="grid-item orange-gradient expandable">
+                    <div class="card-content">
+                        <h3>QUANTUM PROOF</h3>
+                        <p class="card-desc">Built on NIST-approved CRYSTALS-Dilithium.</p>
+                    </div>
+                    <div class="card-expand">
+                        <div class="expand-icon"><span class="icon-line"></span><span class="icon-line"></span></div>
+                        <p class="expand-text">Built on CRYSTALS-Dilithium. Mathematically proven quantum resistance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="developer-slide" id="developer-slide">
+        <canvas id="dev-canvas"></canvas>
+        <div class="dev-cards-container" id="dev-cards-container">
+            <div class="dev-card" id="dev-card-1">
+                <h3 class="dev-card-title">SIGIL SDK</h3>
+                <span class="dev-card-tag">v1.0.4-beta</span>
+                <p class="dev-card-desc">Direct integration for lattice-based signatures into your existing auth flow.</p>
+                <div class="dev-card-expand">
+                    <div class="dev-expand-icon"><span class="dev-icon-line"></span><span class="dev-icon-line"></span></div>
+                    <p class="dev-expand-text">Plug-and-play SDK with support for Node.js, Python, and Go. Full TypeScript definitions included.</p>
+                </div>
+            </div>
+            <div class="dev-card" id="dev-card-2">
+                <h3 class="dev-card-title">API EXPLORER</h3>
+                <span class="dev-card-tag">DOCS.SIGIL.IO</span>
+                <p class="dev-card-desc">Comprehensive documentation for CRYSTALS-Dilithium verification endpoints.</p>
+                <div class="dev-card-expand">
+                    <div class="dev-expand-icon"><span class="dev-icon-line"></span><span class="dev-icon-line"></span></div>
+                    <p class="dev-expand-text">Interactive API playground with real-time signature generation and verification testing.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="sdk-slide" id="sdk-slide">
+        <canvas id="sdk-canvas"></canvas>
+        <div class="sdk-form-card" id="sdk-form-card">
+            <div class="sdk-form-header">
+                <div class="sdk-icon">
+                    <svg width="48" height="56" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M24 2L4 12V26C4 40 24 54 24 54C24 54 44 40 44 26V12L24 2Z" stroke="url(#shieldGrad)" stroke-width="2.5" fill="url(#shieldFill)"/>
+                        <path d="M24 10L10 17V27C10 36 24 46 24 46C24 46 38 36 38 27V17L24 10Z" stroke="url(#shieldGrad)" stroke-width="1.5" fill="none" opacity="0.6"/>
+                        <circle cx="24" cy="28" r="8" stroke="url(#shieldGrad)" stroke-width="1.5" fill="none"/>
+                        <circle cx="24" cy="28" r="3" fill="#C9B3E6"/>
+                        <path d="M24 20V24" stroke="#C9B3E6" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M24 32V36" stroke="#C9B3E6" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M16 28H20" stroke="#C9B3E6" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M28 28H32" stroke="#C9B3E6" stroke-width="1.5" stroke-linecap="round"/>
+                        <defs>
+                            <linearGradient id="shieldGrad" x1="4" y1="2" x2="44" y2="54">
+                                <stop offset="0%" stop-color="#C9B3E6"/>
+                                <stop offset="50%" stop-color="#8B6FD6"/>
+                                <stop offset="100%" stop-color="#5a1d8e"/>
+                            </linearGradient>
+                            <linearGradient id="shieldFill" x1="4" y1="2" x2="44" y2="54">
+                                <stop offset="0%" stop-color="rgba(139, 111, 214, 0.15)"/>
+                                <stop offset="100%" stop-color="rgba(90, 29, 142, 0.25)"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <h2 class="sdk-title">SIGIL TRANSACTION</h2>
+                <p class="sdk-subtitle">Post-quantum secure transaction</p>
+            </div>
+            <form id="sigil-tx-form" class="sdk-form">
+                <div class="sdk-input-group">
+                    <label for="sdk-recipient">Recipient Address</label>
+                    <input type="text" id="sdk-recipient" placeholder="0x..." required pattern="^0x[a-fA-F0-9]{40}$">
+                </div>
+                <div class="sdk-input-group">
+                    <label for="sdk-amount">Amount (ETH)</label>
+                    <input type="number" id="sdk-amount" placeholder="0.001" step="0.0001" min="0" required>
+                </div>
+                <div class="sdk-input-group">
+                    <label for="sdk-message">Message (Optional)</label>
+                    <input type="text" id="sdk-message" placeholder="SIGIL: Quantum-safe transaction!">
+                </div>
+                <button type="submit" class="sdk-submit-btn" id="sdk-submit-btn">
+                    Sign with SIGIL & Send
+                </button>
+            </form>
+            <div class="sdk-error" id="sdk-error"></div>
+            <div class="sdk-status" id="sdk-status"></div>
+        </div>
+    </section>
+
+    <div class="scroll-indicator">
+        <div class="scroll-dot active"></div>
+        <div class="scroll-dot"></div>
+        <div class="scroll-dot"></div>
+        <div class="scroll-dot"></div>
+        <div class="scroll-dot"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+    
+    <!-- Add SIGIL transaction handler -->
+    <script src="sigil-transaction.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="noise.js"></script>
+    <script src="blob.js"></script>
+</body>
+</html>
