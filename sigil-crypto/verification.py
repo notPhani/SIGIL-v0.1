@@ -17,8 +17,6 @@ class LatticeParams:
             raise ValueError("Require m > n")
         if self.q < 2:
             raise ValueError("q must be >= 2")
-
-
 @dataclass
 class QaryLattice:
     """A q-ary lattice Λ_q^⊥(A)."""
@@ -27,12 +25,11 @@ class QaryLattice:
     
     @property
     def device(self):
-        return self.basis.device
+        return self.basis.device 
     
     @property
     def dimension(self):
         return self.params.m
-
 
 @dataclass
 class Signature:
@@ -44,10 +41,7 @@ class Signature:
     def norm(self) -> float:
         """L2 norm of signature"""
         return torch.norm(self.s.float()).item()
-
-
 #----------------------------Lattice Generation----------------------------#
-
 def _generate_constraint_matrix(
     params: LatticeParams,
     seed: str,
@@ -67,8 +61,6 @@ def _generate_constraint_matrix(
     A = torch.cat([A_prime, I], dim=1) % params.q
     
     return A
-
-
 def _construct_public_basis(
     A: torch.Tensor,
     params: LatticeParams
@@ -88,8 +80,6 @@ def _construct_public_basis(
     B[n:, n:] = torch.eye(m - n, dtype=torch.long, device=device)
     
     return B
-
-
 def generate_qary_lattice(
     seed: str,
     params: LatticeParams,
@@ -103,10 +93,7 @@ def generate_qary_lattice(
     B = _construct_public_basis(A, params)
     
     return QaryLattice(params=params, basis=B)
-
-
 #----------------------------Signature Generation----------------------------#
-
 def _hash_message_to_target(
     message: str,
     dimension: int,
@@ -127,8 +114,6 @@ def _hash_message_to_target(
     )
     
     return target
-
-
 def _sample_close_lattice_vector(
     lattice: QaryLattice,
     target: torch.Tensor,
@@ -152,8 +137,6 @@ def _sample_close_lattice_vector(
     signature = (B.T @ coeffs_rounded).long()
     
     return signature
-
-
 def sign_message(
     lattice: QaryLattice,
     message: str,
@@ -166,12 +149,8 @@ def sign_message(
         lattice.params.q,
         lattice.device
     )
-    
     s = _sample_close_lattice_vector(lattice, target, sigma)
-    
     return Signature(s=s, message=message)
-
-
 def verify_signature(
     lattice: QaryLattice,
     signature: Signature,
@@ -191,10 +170,7 @@ def verify_signature(
     distance = torch.norm((signature.s - target).float()).item()
     
     return distance <= bound
-
-
 #----------------------------Visualization----------------------------#
-
 def visualize_lattice_2d(
     lattice: QaryLattice,
     num_points: int = 500,
@@ -220,8 +196,6 @@ def visualize_lattice_2d(
     points_2d = points[:, [i, j]].cpu()
     
     return points_2d
-
-
 def visualize_lattice_3d(
     lattice: QaryLattice,
     num_points: int = 500,
@@ -246,8 +220,7 @@ def visualize_lattice_3d(
     i, j, k = dims
     points_3d = points[:, [i, j, k]].cpu()
     
-    return points_3d
-
+    return points_3d 
 
 def plot_lattice_2d(
     lattice: QaryLattice,
@@ -278,8 +251,6 @@ def plot_lattice_2d(
         print(f"✅ Saved: {save_path}")
     
     plt.show()
-
-
 def plot_lattice_3d(
     lattice: QaryLattice,
     dims: tuple = (0, 1, 2),
@@ -333,8 +304,6 @@ def sigil():
         print("✅ Signature VALID\n")
     else:
         print("❌ Signature INVALID\n")
-    
-    
     plot_lattice_2d(lattice, dims=(0, 1), save_path='lattice_2d.png')
     plot_lattice_3d(lattice, dims=(0, 1, 2), save_path='lattice_3d.png')
     
