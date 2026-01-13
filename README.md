@@ -256,18 +256,18 @@ contract SecureTransfer {
 
 **Challenge:** Given a random matrix \(A\) and a target vector \(h\), find a short vector \(s\) such that:
 
-\[
+$\[
 A \cdot s = h \pmod{q}
-\]
+\]$
 
 **Why it's hard:**
-- Classical computers: \(2^{O(n)}\) operations (exponential)
-- Quantum computers: **Still** \(2^{O(n)}\) operations (no speedup from Shor's algorithm)
-- Best known attack (BKZ): \(2^{0.292n}\) operations
+- Classical computers: $\(2^{O(n)}\)$ operations (exponential)
+- Quantum computers: **Still** $\(2^{O(n)}\)$ operations (no speedup from Shor's algorithm)
+- Best known attack (BKZ): $\(2^{0.292n}\)$ operations
 
 **SIGIL Parameters:**
-- **Demo:** \(n=4, q=97\) (~26 bits security, educational)
-- **Production:** \(n=256, q=8380417\) (~128 bits security, quantum-safe)
+- **Demo:** $\(n=4, q=97\)$ (~26 bits security, educational)
+- **Production:** $\(n=256, q=8380417\)$ (~128 bits security, quantum-safe)
 
 ### **Signature Verification**
 
@@ -284,11 +284,11 @@ def verify_sigil(message, signature, lattice):
 
 **Security Guarantee:**
 
-\[
+$\[
 \Pr[\text{forge SIGIL signature}] \leq 2^{-128}
-\]
+\]$
 
-Even with a quantum computer, an attacker needs \(2^{128}\) operations (~10^38 years on all computers on Earth).
+Even with a quantum computer, an attacker needs $\(2^{128}\)$ operations (~10^38 years on all computers on Earth).
 
 ---
 
@@ -405,62 +405,62 @@ curl http://localhost:8000/sigil/stats
 
 SIGIL constructs a q-ary lattice \(\Lambda_q^{\perp}(A)\) where:
 
-\[
+$\[
 \Lambda_q^{\perp}(A) = \{ \mathbf{s} \in \mathbb{Z}^m : A \cdot \mathbf{s} \equiv 0 \pmod{q} \}
-\]
+\]$
 
 **Public Parameters:**
-- \(A\): Random \(n \times m\) matrix over \(\mathbb{Z}_q\)
-- \(q\): Prime modulus (e.g., 8380417)
-- \(n, m\): Lattice dimensions (production: \(n=256, m=512\))
+- $\(A\): Random \(n \times m\) matrix over \(\mathbb{Z}_q\)$
+- $\(q\): Prime modulus (e.g., 8380417)$
+- $\(n, m\): Lattice dimensions (production: \(n=256, m=512\))$
 
 **Signature Generation:**
 
-1. Hash message: \(h = \text{SHA256}(m) \mod q\)
-2. Sample short vector: \(s \sim D_{\sigma}^m\) (Gaussian distribution)
-3. Adjust to satisfy: \(A \cdot s \equiv h \pmod{q}\)
-4. Return: \(\sigma = (s, h)\)
+1. Hash message: $\(h = \text{SHA256}(m) \mod q\)$
+2. Sample short vector: $\(s \sim D_{\sigma}^m\) (Gaussian distribution)$
+3. Adjust to satisfy: $\(A \cdot s \equiv h \pmod{q}\)$
+4. Return: $\(\sigma = (s, h)\)$
 
 **Verification:**
 
-\[
+$\[
 \text{Accept} \iff (A \cdot s \equiv h \pmod{q}) \land (\|s\| < \beta\sqrt{m})
-\]
+\]$
 
 ### **Quantum Attack Resistance**
 
 **Shor's Algorithm (breaks RSA):**
-- Input: Modulus \(N\)
-- Output: Factors \(p, q\)
-- Complexity: \(O((\log N)^3)\) operations
+- Input: Modulus $\(N\)$
+- Output: Factors $\(p, q\)$
+- Complexity: $\(O((\log N)^3)\)$ operations
 - Quantum speedup: **Exponential** vs classical
 
 **Lattice Reduction (best attack on SIGIL):**
-- Input: Lattice basis \(B\)
-- Output: Short vector \(s\)
-- Complexity: \(2^{0.292n}\) operations (BKZ algorithm)
+- Input: Lattice basis $\(B\)$
+- Output: Short vector $\(s\)$
+- Complexity: $\(2^{0.292n}\)$ operations (BKZ algorithm)
 - Quantum speedup: **None** (Grover only gives \(\sqrt{·}\) speedup → still exponential)
 
 **Security Analysis:**
 
-For SIGIL production parameters (\(n=256\)):
+For SIGIL production parameters $(\(n=256\))$:
 
-\[
+$\[
 \text{Attack cost} = 2^{0.292 \times 256} = 2^{74.8} \approx 10^{22} \text{ operations}
-\]
+\]$
 
-Even with quantum computer operating at \(10^{15}\) ops/second:
+Even with quantum computer operating at $\(10^{15}\)$ ops/second:
 
-\[
+$\[
 \text{Time to break} = \frac{10^{22}}{10^{15}} = 10^7 \text{ seconds} \approx 115 \text{ days}
-\]
+\]$
 
 But this assumes:
 - Perfect quantum computer (no decoherence)
 - No parallelization limits
 - Ignoring polynomial factors
 
-**Reality:** No practical attack exists for \(n \geq 256\).
+**Reality:** No practical attack exists for $\(n \geq 256\)$.
 
 ---
 
