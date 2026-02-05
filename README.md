@@ -1,6 +1,3 @@
-**Here's your revised README.md focusing on SIGIL as a modular transition layer! 🚀**
-
-***
 
 # SIGIL 🛡️
 ### **Drop-In Post-Quantum Security Layer**
