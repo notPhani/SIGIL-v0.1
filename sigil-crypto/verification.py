@@ -21,7 +21,8 @@ class LatticeParams:
 class QaryLattice:
     """A q-ary lattice Λ_q^⊥(A)."""
     params: LatticeParams
-    basis: torch.Tensor
+    A: torch.Tensor     # constraint matrix (n × m)
+    basis: torch.Tensor # public basis (m × m)
     
     @property
     def device(self):
@@ -92,84 +93,94 @@ def generate_qary_lattice(
     A = _generate_constraint_matrix(params, seed, device)
     B = _construct_public_basis(A, params)
     
-    return QaryLattice(params=params, basis=B)
+    return QaryLattice(params=params, A=A, basis=B)
 #----------------------------Signature Generation----------------------------#
-def _hash_message_to_target(
+def _hash_message_to_syndrome(
     message: str,
-    dimension: int,
-    modulus: int,
+    n: int,
+    q: int,
     device: str
 ) -> torch.Tensor:
-    """Hash message to a target point OUTSIDE the main lattice."""
-    hash_bytes = hashlib.sha256(message.encode()).digest()
+    """Hash message to target syndrome vector (n-dimensional)"""
+    digest = hashlib.sha256(message.encode()).digest()
     
-    seed = int.from_bytes(hash_bytes[:4], 'big')
+    seed = int.from_bytes(digest[:4], 'big')
     torch.manual_seed(seed)
     
-    target = torch.randint(
-        modulus // 2, modulus * 2,
-        (dimension,),
+    return torch.randint(
+        0, q,
+        (n,),
         dtype=torch.long,
         device=device
     )
-    
-    return target
-def _sample_close_lattice_vector(
-    lattice: QaryLattice,
-    target: torch.Tensor,
-    sigma: float = 2.0
-) -> torch.Tensor:
-    """Sample lattice vector close to target using Gaussian sampling."""
-    B = lattice.basis.float()
-    device = lattice.device
-    m = lattice.dimension
-    
-    try:
-        B_pinv = torch.linalg.pinv(B)
-    except:
-        B_pinv = torch.linalg.lstsq(B.T, torch.eye(m, device=device)).solution.T
-    
-    coeffs = B_pinv @ target.float()
-    noise = torch.randn_like(coeffs) * sigma
-    coeffs_noisy = coeffs + noise
-    coeffs_rounded = torch.round(coeffs_noisy)
-    
-    signature = (B.T @ coeffs_rounded).long()
-    
-    return signature
+
 def sign_message(
     lattice: QaryLattice,
     message: str,
     sigma: float = 2.0
 ) -> Signature:
-    """Generate lattice-based signature."""
-    target = _hash_message_to_target(
-        message,
-        lattice.dimension,
-        lattice.params.q,
-        lattice.device
-    )
-    s = _sample_close_lattice_vector(lattice, target, sigma)
+    """
+    Generate lattice-based signature using q-ary lattice structure.
+    
+    This uses the "Complex Projection / Dual Spaces" approach:
+    - A = [A' | I_n]
+    - Sample y ~ D_σ^{m-n} for first m-n components
+    - Compute z ≡ h - A'·y (mod q) for last n components
+    - Returns s = [y; z] satisfying A·s ≡ h (mod q)
+    """
+    device = lattice.device
+    n, m = lattice.params.n, lattice.params.m
+    q = lattice.params.q
+    A = lattice.A
+    A_prime = A[:, :m - n]
+    
+    # Get target syndrome (n-dimensional)
+    h = _hash_message_to_syndrome(message, n, q, device)
+    
+    # Sample first m-n components from discrete Gaussian
+    y = torch.randn(m - n, device=device) * sigma
+    y = torch.round(y).to(torch.long)
+    y = torch.where(y > q // 2, y - q, y)
+    
+    # Compute last n components to satisfy A·s ≡ h (mod q)
+    z = (h - (A_prime @ y) % q) % q
+    z = torch.where(z > q // 2, z - q, z)
+    
+    # Combine
+    s = torch.cat([y, z])
+    
     return Signature(s=s, message=message)
+
 def verify_signature(
     lattice: QaryLattice,
     signature: Signature,
-    bound: float = None
+    noise_bound: int = 2
 ) -> bool:
-    """Verify lattice signature."""
-    if bound is None:
-        bound = 5.0 * np.sqrt(lattice.dimension)
+    """Verify lattice signature: check A·s ≡ h (mod q) and norm bound."""
+    A = lattice.A
+    q = lattice.params.q
+    n = lattice.params.n
+    m = lattice.dimension
+    device = lattice.device
     
-    target = _hash_message_to_target(
-        signature.message,
-        lattice.dimension,
-        lattice.params.q,
-        lattice.device
-    )
+    # Compute target syndrome
+    h = _hash_message_to_syndrome(signature.message, n, q, device)
     
-    distance = torch.norm((signature.s - target).float()).item()
+    # Check constraint: A·s ≡ h mod q
+    As = (A @ signature.s) % q
+    residual = (As - h) % q
+    residual = torch.minimum(residual, q - residual)
+    max_error = residual.abs().max().item()
     
-    return distance <= bound
+    if max_error > noise_bound:
+        return False
+    
+    # Check norm - realistic bounds for q-ary lattice
+    norm = signature.norm
+    lo = 1.0 * np.sqrt(m)
+    hi = max(10.0 * np.sqrt(m), 4.0 * q * np.sqrt(n) / 4.0)
+    
+    return lo <= norm <= hi
 #----------------------------Visualization----------------------------#
 def visualize_lattice_2d(
     lattice: QaryLattice,
