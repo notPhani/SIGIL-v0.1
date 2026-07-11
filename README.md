@@ -1,4 +1,3 @@
-
 # SIGIL 🛡️
 ### **Drop-In Post-Quantum Security Layer**
 
@@ -7,10 +6,13 @@
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8+-green.svg)
 ![Integration](https://img.shields.io/badge/integration-15_minutes-brightgreen.svg)
+![Status](https://img.shields.io/badge/status-experimental%2Fdemo-orange.svg)
 
-**The Problem:** Quantum computers will break RSA and ECDSA within 15-20 years. Migrating your entire authentication infrastructure is expensive and risky.
+**The Problem:** Quantum computers may eventually break RSA and ECDSA via Shor's algorithm; estimates for when a cryptographically relevant quantum computer will exist vary widely (commonly cited as 10-20+ years out, with significant uncertainty). Migrating your entire authentication infrastructure is expensive and risky.
 
 **The Solution:** SIGIL is a **modular post-quantum signature layer** that sits alongside your existing crypto, providing quantum resistance without touching legacy code.
+
+> ⚠️ **Status note:** The code in this repository is a teaching/reference implementation of a plain lattice SIS signature scheme. It is **not** a hardened, audited, production-grade post-quantum implementation. For production use, use a NIST-standardized implementation such as [liboqs](https://github.com/open-quantum-safe/liboqs) (ML-DSA / CRYSTALS-Dilithium). See the "Demo vs. Production" section below before relying on any numbers in this README.
 
 ---
 
@@ -24,7 +26,7 @@ Organizations face a dilemma when preparing for quantum threats:
 |----------|------|------|----------|
 | **Full Migration** | $$$$ | High (breaking changes) | 2-3 years |
 | **Hybrid Layer** | $ | Low (additive) | 2-3 weeks |
-| **Do Nothing** | $0 | Catastrophic (post-Q-Day) | Until broken |
+| **Do Nothing** | $0 | Growing over time as quantum computing matures | Until broken |
 
 **SIGIL is the hybrid approach:** Add post-quantum signatures *on top of* your existing authentication without replacing anything.
 
@@ -33,7 +35,7 @@ Organizations face a dilemma when preparing for quantum threats:
 1. **Non-Breaking:** Works alongside RSA/ECDSA, doesn't replace them
 2. **Gradual Migration:** Opt-in per transaction, not all-or-nothing
 3. **Framework Agnostic:** REST API works with any language/platform
-4. **Production Ready:** Built on NIST-standardized lattice cryptography
+4. **Reference Implementation:** Demonstrates lattice-based (SIS) signature concepts underlying NIST-standardized schemes like CRYSTALS-Dilithium
 5. **Verifiable:** Transparent math, open-source implementation
 
 ---
@@ -48,7 +50,7 @@ Organizations face a dilemma when preparing for quantum threats:
 │  ┌────────────────────────────────────────┐                 │
 │  │  User Authentication                    │                 │
 │  │  -  RSA-2048 signatures                  │                 │
-│  │  -  ECDSA wallet signatures              │                 │
+│  │  -  ECDSA wallet signatures               │                 │
 │  │  -  JWT tokens                           │                 │
 │  │  -  OAuth2 flows                         │                 │
 │  └────────────────────────────────────────┘                 │
@@ -57,7 +59,7 @@ Organizations face a dilemma when preparing for quantum threats:
 │  ┌────────────────────────────────────────┐                 │
 │  │  ✨ SIGIL LAYER (Added)                │                 │
 │  │  -  Generate lattice signature           │                 │
-│  │  -  Verify quantum resistance            │                 │
+│  │  -  Verify against SIGIL policy          │                 │
 │  │  -  Store parallel proof                 │                 │
 │  │  -  Return verdict: ACCEPT/REJECT        │                 │
 │  └────────────────────────────────────────┘                 │
@@ -113,13 +115,13 @@ else:
 ```
 
 **Security guarantee:**
-- Attacker must break *both* RSA *and* lattice crypto
-- If one system has unknown vulnerability, the other protects
+- An attacker generally needs to break *both* the classical scheme *and* the lattice scheme to forge a transaction
+- If one system has an unknown vulnerability, the other still provides some protection
 - Smooth transition path to pure post-quantum
 
 #### **Mode 3: Post-Quantum Primary (Future-Proof)**
 
-SIGIL becomes primary, classical signature optional. Full quantum resistance.
+SIGIL becomes primary, classical signature optional.
 
 ```python
 # SIGIL is primary verifier
@@ -244,10 +246,10 @@ contract SecureTransfer {
 
 | Crypto System | Quantum Vulnerable? | Security Basis | NIST Status |
 |---------------|---------------------|----------------|-------------|
-| RSA | ✅ YES (Shor's algorithm) | Integer factorization | Deprecated post-quantum |
-| ECDSA | ✅ YES (Shor's algorithm) | Discrete log problem | Deprecated post-quantum |
-| CRYSTALS-Dilithium | ❌ NO | Lattice SIS problem | **Selected 2022** |
-| SIGIL | ❌ NO | Lattice SIS problem | Based on Dilithium |
+| RSA | ✅ YES (Shor's algorithm) | Integer factorization | Not selected as a PQC standard |
+| ECDSA | ✅ YES (Shor's algorithm) | Discrete log problem | Not selected as a PQC standard |
+| CRYSTALS-Dilithium (ML-DSA) | ❌ NO (no known efficient quantum attack) | Module-LWE / Module-SIS | **Selected 2022, standardized as FIPS 204 (2024)** |
+| SIGIL (this repo) | ❌ NO (no known efficient quantum attack) | Plain lattice SIS problem | Educational reference; **not** a NIST-standardized scheme |
 
 ### **The SIS Problem (Simplified)**
 
@@ -258,34 +260,27 @@ A \cdot s = h \pmod{q}
 \]$
 
 **Why it's hard:**
-- Classical computers: $\(2^{O(n)}\)$ operations (exponential)
-- Quantum computers: **Still** $\(2^{O(n)}\)$ operations (no speedup from Shor's algorithm)
-- Best known attack (BKZ): $\(2^{0.292n}\)$ operations
+- Classical computers: best known attacks run in $\(2^{O(n)}\)$ time (exponential in the lattice dimension)
+- Quantum computers: Grover-type search gives at most a quadratic speedup on unstructured search, so the best known attacks remain exponential (no analogue of Shor's algorithm is known for this problem)
+- Best known attack in practice (lattice reduction, e.g. BKZ): roughly $\(2^{c \cdot n}\)$ operations, where \(c\) depends on the attack model (commonly cited estimates use \(c \approx 0.29\)-\(0.3\) as a rough rule of thumb, not an exact constant)
 
-**SIGIL Parameters:**
-- **Demo:** $\(n=4, q=97\)$ (~26 bits security, educational)
-- **Production:** $\(n=256, q=8380417\)$ (~128 bits security, quantum-safe)
+**SIGIL Parameters — demo vs. production (see note above):**
+- **Demo (this repo, default):** $\(n=4, q=97\)$ — a handful of bits of security; **for learning the math only, not secure for any real use**
+- **What real production-grade parameters look like:** NIST's ML-DSA (Dilithium) achieves its ~128–256-bit security levels using structured **module lattices** (Module-LWE/Module-SIS) with carefully chosen dimensions, moduli, and rejection sampling — not by simply plugging a large \(n\) into the plain SIS scheme shown in this repo. Naively scaling this repo's toy scheme to "n=256" does **not**, by itself, give 128-bit security — see the worked example below.
 
 ### **Signature Verification**
 
 ```python
 # Classical RSA verification
 def verify_rsa(message, signature, public_key):
-    return signature^e ≡ hash(message) mod N  # Broken by quantum
+    return pow(signature, e, N) == hash(message) % N  # Breakable by a sufficiently
+                                                        # large quantum computer via Shor's algorithm
 
-# SIGIL lattice verification (quantum-resistant)
+# SIGIL lattice verification (believed quantum-resistant at adequate parameters)
 def verify_sigil(message, signature, lattice):
-    h = hash(message) mod q
-    return (A @ signature.s) ≡ h mod q AND ||signature.s|| < bound
+    h = hash(message) % q
+    return (A @ signature.s) % q == h and norm(signature.s) < bound
 ```
-
-**Security Guarantee:**
-
-$\[
-\Pr[\text{forge SIGIL signature}] \leq 2^{-128}
-\]$
-
-Even with a quantum computer, an attacker needs $\(2^{128}\)$ operations (~10^38 years on all computers on Earth).
 
 ---
 
@@ -294,25 +289,28 @@ Even with a quantum computer, an attacker needs $\(2^{128}\)$ operations (~10^38
 ### **Defense in Depth**
 
 ```
-Transaction Security = Classical ∩ Post-Quantum
+Transaction Security = Classical AND Post-Quantum (dual verification mode)
 
 ┌─────────────────────────────────────────────┐
-│  Security Timeline                          │
+│  Illustrative Security Timeline             │
+│  (dates below are commonly cited estimates, │
+│   not certainties)                          │
 │                                             │
 │  ████████████████████ RSA-2048 ───────────┐ │
 │  ██████████████████████████████ ECDSA ───┐│ │
 │  █████████████████████████████████████...  │ │
 │  └─────────────────────────────────────┘   │
 │         ↑                      ↑            │
-│      Today              Quantum Threat      │
-│      (2026)               (~2040)           │
+│      Today              Possible quantum    │
+│      (2026)             threat (est. 2030s+)│
 │                                             │
 │  ████████████████████████████████████████  │
-│  ██████████ SIGIL (Lattice) ████████████   │
+│  ████ Properly-parameterized PQC ████████   │
 │  █████████████████████████████████████...  │
 │                                             │
 │  Hybrid Mode:                               │
-│  Both must pass → Secure until 2040+       │
+│  Both must pass → defense-in-depth during   │
+│  the transition period                      │
 └─────────────────────────────────────────────┘
 ```
 
@@ -329,9 +327,9 @@ Transaction Security = Classical ∩ Post-Quantum
 - Build confidence in post-quantum
 
 **Phase 3:** Post-Quantum Primary (Year 2+)
-- SIGIL becomes primary verifier
+- A standards-track implementation (e.g. ML-DSA via liboqs) becomes primary verifier
 - Classical signatures optional
-- Full quantum resistance
+- Full quantum resistance, contingent on using vetted, correctly-parameterized schemes
 
 ---
 
@@ -382,17 +380,19 @@ curl http://localhost:8000/sigil/stats
 
 ---
 
-## 📈 **Real-World Performance**
+## 📈 **Reference Implementation Performance (demo parameters)**
 
-| Metric | Classical RSA | SIGIL Lattice | Impact |
-|--------|---------------|---------------|--------|
-| Signature size | 256 bytes | 64 bytes | **4x smaller** |
-| Signing time | 5 ms | 2.5 ms | **2x faster** |
-| Verification time | 0.5 ms | 0.8 ms | 1.6x slower |
-| Quantum resistant | ❌ NO | ✅ YES | **Future-proof** |
-| Memory usage | 2 KB | 1 KB | **2x less** |
+The figures below are measured against this repo's **default demo parameters** (small \(n\)), not a production-security configuration. They illustrate relative overhead, not real-world post-quantum signature sizes — compare against the Dilithium column in the table further down for realistic production numbers.
 
-**Verdict:** SIGIL is **faster and smaller** than RSA while providing quantum resistance.
+| Metric | Classical RSA-2048 | SIGIL (demo params) | Notes |
+|--------|---------------------|----------------------|-------|
+| Signature size | 256 bytes | ~64 bytes | Demo-only; production lattice signatures (e.g. Dilithium) are **larger** than RSA, not smaller — see comparison table below |
+| Signing time | 5 ms | 2.5 ms | Demo params only; not representative of production-parameter cost |
+| Verification time | 0.5 ms | 0.8 ms | |
+| Quantum resistant | Vulnerable to Shor's algorithm on a sufficiently capable quantum computer | Believed resistant *at production parameters*; demo params are not secure | |
+| Memory usage | 2 KB | 1 KB | Demo-only |
+
+**Takeaway:** don't extrapolate these demo numbers to production security claims. At real production parameters, lattice signatures are typically **larger** than RSA-2048 (see Dilithium's ~2420-byte signatures below), which is the normal, expected trade-off for post-quantum security today.
 
 ---
 
@@ -406,10 +406,10 @@ $\[
 \Lambda_q^{\perp}(A) = \{ \mathbf{s} \in \mathbb{Z}^m : A \cdot \mathbf{s} \equiv 0 \pmod{q} \}
 \]$
 
-**Public Parameters:**
+**Public Parameters (this repo's demo scheme):**
 - $\(A\): Random \(n \times m\) matrix over \(\mathbb{Z}_q\)$
-- $\(q\): Prime modulus (e.g., 8380417)$
-- $\(n, m\): Lattice dimensions (production: \(n=256, m=512\))$
+- $\(q\): Prime modulus (demo default: 97)$
+- $\(n, m\): Lattice dimensions (demo default: \(n=4\))$
 
 **Signature Generation:**
 
@@ -424,40 +424,33 @@ $\[
 \text{Accept} \iff (A \cdot s \equiv h \pmod{q}) \land (\|s\| < \beta\sqrt{m})
 \]$
 
-### **Quantum Attack Resistance**
+### **Worked Security Estimate (corrected)**
 
-**Shor's Algorithm (breaks RSA):**
-- Input: Modulus $\(N\)$
-- Output: Factors $\(p, q\)$
-- Complexity: $\(O((\log N)^3)\)$ operations
-- Quantum speedup: **Exponential** vs classical
+Using the rough BKZ heuristic $\(2^{0.292n}\)$ operations as an *order-of-magnitude estimate* (real security proofs are more involved and depend on the reduction quality, hardness assumptions, and concrete attack models):
 
-**Lattice Reduction (best attack on SIGIL):**
+For $\(n = 256\)$:
+
+$\[
+2^{0.292 \times 256} = 2^{74.8} \approx 4 \times 10^{22} \text{ operations}
+\]$
+
+**This is roughly a 75-bit security level, not 128-bit.** This matters: 75-bit security is well below the ≥128-bit floor considered adequate against realistic adversaries, and at plausible operation rates this level could be within reach of a large, well-funded classical compute cluster over a period of years — it is not "practically unbreakable." This is precisely why real standards like ML-DSA/Dilithium don't just pick \(n=256\) in a plain SIS scheme; they use structured module lattices and larger effective parameters to reach genuine 128+/192+/256-bit security levels.
+
+**Corrected takeaway:** don't treat "n=256" as a stand-in for "128-bit security" — the two are not the same thing outside of a specific, fully-specified scheme. Any production deployment should use validated parameter sets from a standard (ML-DSA) and a vetted library (liboqs), not parameters picked by analogy to this demo.
+
+### **Quantum Attack Resistance (accurate framing)**
+
+**Shor's Algorithm (breaks RSA/ECDSA on a sufficiently large fault-tolerant quantum computer):**
+- Input: Modulus $\(N\)$ (RSA) or curve parameters (ECDSA)
+- Output: Private key material
+- Offers an **exponential** quantum speedup over the best known classical factoring/discrete-log algorithms
+
+**Lattice reduction (best known attack class on SIS/LWE-based schemes):**
 - Input: Lattice basis $\(B\)$
 - Output: Short vector $\(s\)$
-- Complexity: $\(2^{0.292n}\)$ operations (BKZ algorithm)
-- Quantum speedup: **None** (Grover only gives \(\sqrt{·}\) speedup → still exponential)
+- Best known classical and quantum algorithms are both **exponential** in the lattice dimension; Grover search gives at most a quadratic speedup on the generic search component, which does not change the exponential nature of the problem
 
-**Security Analysis:**
-
-For SIGIL production parameters $(\(n=256\))$:
-
-$\[
-\text{Attack cost} = 2^{0.292 \times 256} = 2^{74.8} \approx 10^{22} \text{ operations}
-\]$
-
-Even with quantum computer operating at $\(10^{15}\)$ ops/second:
-
-$\[
-\text{Time to break} = \frac{10^{22}}{10^{15}} = 10^7 \text{ seconds} \approx 115 \text{ days}
-\]$
-
-But this assumes:
-- Perfect quantum computer (no decoherence)
-- No parallelization limits
-- Ignoring polynomial factors
-
-**Reality:** No practical attack exists for $\(n \geq 256\)$.
+This absence of a known exponential quantum speedup — not an absolute, parameter-independent guarantee — is the actual basis for lattice cryptography's post-quantum candidacy. Concrete security still depends entirely on choosing adequate, vetted parameters (see estimate above).
 
 ---
 
@@ -486,21 +479,21 @@ Any point: c₁·b₁ + c₂·b₂ where c₁, c₂ ∈ ℤ
 
 **Why it's hard:**
 - In 2D: Easy (just look at it)
-- In 256D: **Exponentially hard** (even with quantum computers)
+- In high dimensions with well-chosen parameters: believed to be computationally infeasible for both classical and quantum computers
 
-SIGIL hides secrets in high-dimensional lattices where finding short vectors is computationally infeasible.
+SIGIL's demo illustrates this idea in low dimensions purely for teaching purposes; it is not itself a secure construction.
 
-### **SIGIL vs CRYSTALS-Dilithium**
+### **SIGIL vs CRYSTALS-Dilithium (ML-DSA)**
 
-| Feature | Dilithium (NIST) | SIGIL (Demo) |
-|---------|------------------|--------------|
-| Security | 128-256 bits | 26 bits (educational) |
-| Signature size | 2420 bytes | 64 bytes |
-| Complexity | Production-ready | Teaching tool |
-| Optimizations | Ring-LWE, NTT | Plain SIS |
-| Use case | Deploy now | Learn concepts |
+| Feature | Dilithium / ML-DSA (NIST standard) | SIGIL (this repo, demo) |
+|---------|--------------------------------------|--------------------------|
+| Security | ~128/192/256-bit levels (ML-DSA-44/65/87), via structured module lattices | ~single-digit-to-tens of bits at default demo params — **not secure** |
+| Signature size | ~2420 bytes (ML-DSA-44) and up | ~64 bytes at demo params (not comparable — different security level) |
+| Status | FIPS 204 standardized, production-ready via vetted libraries | Teaching tool only |
+| Underlying structure | Module-LWE / Module-SIS with NTT-friendly rings | Plain (unstructured) SIS |
+| Use case | Deploy now, via liboqs or a vetted language binding | Learn the underlying math |
 
-**Key Insight:** SIGIL simplifies Dilithium's design for educational purposes. For production, use [liboqs](https://github.com/open-quantum-safe/liboqs) with full Dilithium implementation.
+**Key Insight:** SIGIL simplifies Dilithium's design for educational purposes by dropping the module structure and using small parameters. That simplification is exactly what makes it easy to understand — and exactly what makes it insecure. For production, use [liboqs](https://github.com/open-quantum-safe/liboqs) with a full ML-DSA/Dilithium implementation.
 
 ---
 
@@ -529,6 +522,7 @@ Contact: **support@sigil.io**
 
 - [NIST Post-Quantum Cryptography Project](https://csrc.nist.gov/projects/post-quantum-cryptography)
 - [CRYSTALS-Dilithium Specification](https://pq-crystals.org/dilithium/)
+- [FIPS 204: Module-Lattice-Based Digital Signature Standard](https://csrc.nist.gov/pubs/fips/204/final)
 - [Lattice-Based Cryptography for Beginners](https://eprint.iacr.org/2015/938)
 - [Quantum Threat Timeline (NIST Report)](https://doi.org/10.6028/NIST.IR.8413)
 
@@ -536,31 +530,30 @@ Contact: **support@sigil.io**
 
 ## 🎯 **TL;DR**
 
-**Classical signatures are doomed. SIGIL makes the transition painless.**
+**Classical signatures are vulnerable to a future large-scale quantum computer. This repo is a hands-on way to learn how lattice-based signatures work — it is not a production security layer.**
 
 ```bash
-# 1. Add SIGIL layer (doesn't break anything)
+# 1. Add SIGIL layer for learning/prototyping (demo params only)
 pip install sigil-client
 
 # 2. Verify transactions
 verdict = sigil.verify(sender, receiver, amount)
 
-# 3. Sleep better knowing you're quantum-ready
+# 3. For real quantum-readiness, swap in a vetted ML-DSA/Dilithium
+#    implementation (e.g. liboqs) with production parameters
 if verdict == "ACCEPT":
-    process_transaction()  # ✅ Post-quantum secure
+    process_transaction()  # Demo-only verdict — not a production security guarantee
 ```
-
-**Quantum computers are coming. SIGIL makes you ready today.**
 
 ---
 
-**Built with ❤️ by cryptographers who actually understand lattices**
+**Built by developers exploring lattice-based cryptography — feedback and corrections welcome.**
 
 ---
 
 ## 📄 License
 
-MIT License - Use freely, even in commercial products
+MIT License - Use freely, even in commercial products. **No warranty of security or fitness for any particular purpose is provided or implied** — see LICENSE for full terms.
 
 ---
 
@@ -572,5 +565,4 @@ MIT License - Use freely, even in commercial products
 
 ---
 
-*"The best time to add post-quantum security was 10 years ago. The second best time is now."*
-```
+*"Understand the math before you trust the guarantee."*
